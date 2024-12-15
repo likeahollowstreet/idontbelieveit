@@ -1,0 +1,103 @@
+use std::env;
+use std::fs::File;
+use std::io::{self, BufRead, Write};
+
+/*
+ * Complete the 'queensAttack' function below.
+ *
+ * The function is expected to return an INTEGER.
+ * The function accepts following parameters:
+ *  1. INTEGER n
+ *  2. INTEGER k
+ *  3. INTEGER r_q
+ *  4. INTEGER c_q
+ *  5. 2D_INTEGER_ARRAY obstacles
+ */
+
+fn queensAttack(n: i32, k: i32, r_q: i32, c_q: i32, obstacles: &[Vec<i32>]) -> i32 {
+    // Directions: (row_offset, col_offset)
+    let directions = vec![
+        (-1, 0),  // Up
+        (1, 0),   // Down
+        (0, -1),  // Left
+        (0, 1),   // Right
+        (-1, -1), // Top-left diagonal
+        (-1, 1),  // Top-right diagonal
+        (1, -1),  // Bottom-left diagonal
+        (1, 1),   // Bottom-right diagonal
+    ];
+    
+    // Track the obstacles in a set for fast lookup
+    let mut obstacles_set = std::collections::HashSet::new();
+    for obs in obstacles {
+        let (r_o, c_o) = (obs[0], obs[1]);
+        obstacles_set.insert((r_o, c_o));
+    }
+    
+    // Count the squares the queen can attack
+    let mut count = 0;
+
+    for (dr, dc) in directions {
+        let mut r = r_q;
+        let mut c = c_q;
+
+        // Move in the given direction until we hit the boundary or an obstacle
+        loop {
+            r += dr;
+            c += dc;
+
+            // Check if the new position is within bounds
+            if r < 1 || r > n || c < 1 || c > n {
+                break;
+            }
+
+            // Check if an obstacle is in the way
+            if obstacles_set.contains(&(r, c)) {
+                break;
+            }
+
+            count += 1;
+        }
+    }
+
+    count
+}
+
+fn main() {
+    let stdin = io::stdin();
+    let mut stdin_iterator = stdin.lock().lines();
+
+    let mut fptr = File::create(env::var("OUTPUT_PATH").unwrap()).unwrap();
+
+    let first_multiple_input: Vec<String> = stdin_iterator.next().unwrap().unwrap()
+        .split(' ')
+        .map(|s| s.to_string())
+        .collect();
+
+    let n = first_multiple_input[0].trim().parse::<i32>().unwrap();
+    let k = first_multiple_input[1].trim().parse::<i32>().unwrap();
+
+    let second_multiple_input: Vec<String> = stdin_iterator.next().unwrap().unwrap()
+        .split(' ')
+        .map(|s| s.to_string())
+        .collect();
+
+    let r_q = second_multiple_input[0].trim().parse::<i32>().unwrap();
+    let c_q = second_multiple_input[1].trim().parse::<i32>().unwrap();
+
+    let mut obstacles: Vec<Vec<i32>> = Vec::with_capacity(k as usize);
+
+    for _ in 0..k as usize {
+        let obstacle_input: Vec<String> = stdin_iterator.next().unwrap().unwrap()
+            .split(' ')
+            .map(|s| s.to_string())
+            .collect();
+        let r_o = obstacle_input[0].trim().parse::<i32>().unwrap();
+        let c_o = obstacle_input[1].trim().parse::<i32>().unwrap();
+        obstacles.push(vec![r_o, c_o]);
+    }
+
+    let result = queensAttack(n, k, r_q, c_q, &obstacles);
+
+    writeln!(&mut fptr, "{}", result).ok();
+}
