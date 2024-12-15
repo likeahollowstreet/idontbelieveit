@@ -1,0 +1,92 @@
+use std::env;
+use std::fs::File;
+use std::io::{self, BufRead, Write};
+use std::collections::VecDeque;
+
+/*
+ * Complete the 'knightlOnAChessboard' function below.
+ *
+ * The function is expected to return a 2D_INTEGER_ARRAY.
+ * The function accepts INTEGER n as parameter.
+ */
+
+fn knightlOnAChessboard(n: i32) -> Vec<Vec<i32>> {
+    let n = n as usize;
+    let mut results = vec![vec![0; n - 1]; n - 1];
+
+    for a in 1..n {
+        for b in 1..n {
+            results[a - 1][b - 1] = bfs_knight_moves(n, a, b);
+        }
+    }
+
+    results
+}
+
+fn bfs_knight_moves(n: usize, a: usize, b: usize) -> i32 {
+    // Directions a KnightL(a, b) can move
+    let directions = [
+        (a as isize, b as isize),
+        (a as isize, -(b as isize)),
+        (-(a as isize), b as isize),
+        (-(a as isize), -(b as isize)),
+        (b as isize, a as isize),
+        (b as isize, -(a as isize)),
+        (-(b as isize), a as isize),
+        (-(b as isize), -(a as isize)),
+    ];
+
+    // BFS queue
+    let mut queue = VecDeque::new();
+    queue.push_back((0, 0, 0)); // (x, y, moves)
+
+    // Visited positions
+    let mut visited = vec![vec![false; n]; n];
+    visited[0][0] = true;
+
+    // BFS traversal
+    while let Some((x, y, moves)) = queue.pop_front() {
+        if x == (n - 1) as isize && y == (n - 1) as isize {
+            return moves; // Reached destination
+        }
+
+        for &(dx, dy) in &directions {
+            let nx = x + dx;
+            let ny = y + dy;
+
+            if nx >= 0 && ny >= 0 && nx < n as isize && ny < n as isize && !visited[nx as usize][ny as usize] {
+                visited[nx as usize][ny as usize] = true;
+                queue.push_back((nx, ny, moves + 1));
+            }
+        }
+    }
+
+    -1 // If destination is unreachable
+}
+
+fn main() {
+    let stdin = io::stdin();
+    let mut stdin_iterator = stdin.lock().lines();
+
+    let mut fptr = File::create(env::var("OUTPUT_PATH").unwrap()).unwrap();
+
+    let n = stdin_iterator.next().unwrap().unwrap().trim().parse::<i32>().unwrap();
+
+    let result = knightlOnAChessboard(n);
+
+    for i in 0..result.len() {
+        for j in 0..result[i].len() {
+            write!(&mut fptr, "{}", result[i][j]).ok();
+
+            if j != result[i].len() - 1 {
+                write!(&mut fptr, " ").ok();
+            }
+        }
+
+        if i != result.len() - 1 {
+            writeln!(&mut fptr).ok();
+        }
+    }
+
+    writeln!(&mut fptr).ok();
+}
