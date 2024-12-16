@@ -1,10 +1,11 @@
 # idontbelieveit
 This repository is dedicated to the course of Advanced Technologies and Application Development
 
-/*
 # Solve me first (Easy)
 1. Importing the I/O Module
+   
 use std::io;
+
 - The std::io module provides functionalities for input and output operations, such as reading user input and writing output to the console.
 - In this case, it allows us to read user input from the standard input (keyboard).
 
@@ -59,8 +60,6 @@ _num_str_1 becomes "5\n", trimmed to "5", parsed to 5.
 _num_str_2 becomes "10\n", trimmed to "10", parsed to 10.
 Output:
 15
-
-*/
 
 # Simple array sum (easy)
 Imports
