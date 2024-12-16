@@ -4,8 +4,8 @@ This repository is dedicated to the course of Advanced Technologies and Applicat
 # Solve me first (Easy)
 1. Importing the I/O Module
 use std::io;
-- The std::io module provides functionalities for input and output operations, such as reading user input and writing output to the console.
-- In this case, it allows us to read user input from the standard input (keyboard).
+. The std::io module provides functionalities for input and output operations, such as reading user input and writing output to the console.
+. In this case, it allows us to read user input from the standard input (keyboard).
 
 2. Main Function
 fn main() {
