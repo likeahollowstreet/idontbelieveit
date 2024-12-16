@@ -9,39 +9,55 @@ use std::io;
 - The std::io module provides functionalities for input and output operations, such as reading user input and writing output to the console.
 - In this case, it allows us to read user input from the standard input (keyboard).
 
+
 2. Main Function
+   
 fn main() {
+
 - The main function is the entry point of the program. When the program runs, execution starts here.
 
+
 3. Variable Declaration
+   
 let mut _num_str_1 = String::new();
 let mut _num_str_2 = String::new();
+
 - Declares two mutable (mut) variables, _num_str_1 and _num_str_2, and initializes them with an empty String.
 - String::new() creates an empty String object that will later store user input.
 - The underscore (_) at the start of the variable names indicates that the variables are not necessarily expected to be used further, though this convention is not strictly followed here.
 
+
 4. Reading Input
+   
 io::stdin().read_line(&mut _num_str_1).ok().expect("read error");
 io::stdin().read_line(&mut _num_str_2).ok().expect("read error");
+
 - io::stdin(): Captures standard input from the user (keyboard input).
 - read_line(&mut _num_str_1): Reads a line of input from the user and stores it in _num_str_1.
 The &mut means that _num_str_1 is passed as a mutable reference, so the function can modify its value.
 - .ok(): Returns an Option type to check if the read operation was successful.
 - .expect("read error"): If the read_line operation fails, the program panics and displays the message "read error". This ensures the program doesn't continue with invalid input.
 
+
 5. Parsing Input into Integers
+   
 let mut _num_1: i32 = _num_str_1.trim().parse().ok().expect("parse error");
 let mut _num_2: i32 = _num_str_2.trim().parse().ok().expect("parse error");
+
 - _num_str_1.trim(): Removes any leading/trailing whitespace or newline characters from the input string (e.g., "\n" from pressing "Enter").
 - .parse(): Converts the trimmed string into an integer (i32 in this case).
 - .ok(): Checks if the conversion is successful, returning an Option.
 - .expect("parse error"): If the parsing fails (e.g., input is not a valid number), the program panics and displays "parse error".
 
+
 6. Printing the Sum
+   
 println!("{}", _num_1 + _num_2);
+
 - println!: Outputs formatted text to the console.
 - {}: Placeholder for the result of _num_1 + _num_2.
 - This line calculates the sum of the two parsed integers and prints the result to the console.
+
 
 How the Code Works Overall
 1. The program declares two empty strings to hold user input.
@@ -50,16 +66,19 @@ How the Code Works Overall
 4. It calculates the sum of the two integers.
 5. The sum is printed to the console.
 
+
 Example Input and Output
 Input:
 5
 10
+
 
 Execution Steps:
 _num_str_1 becomes "5\n", trimmed to "5", parsed to 5.
 _num_str_2 becomes "10\n", trimmed to "10", parsed to 10.
 Output:
 15
+
 
 # Simple array sum (easy)
 Imports
