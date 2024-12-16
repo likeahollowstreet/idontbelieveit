@@ -1505,3 +1505,393 @@ Edge Cases
    - Output: [40, 75, 80].
 
 # Queen's attack II (medium)
+1. Explanation of the queensAttack Code
+This program calculates the number of squares a queen can attack on an n x n chessboard, given her position and the positions of obstacles.
+2. Key Components of the queensAttack Function
+- Parameters
+  1. n: Size of the chessboard (n x n).
+  2. k: Number of obstacles.
+  3. r_q, c_q: Row and column position of the queen.
+  4. obstacles: List of obstacles as pairs [row, column].
+
+- Logic
+  1. Define Movement Directions:
+
+let directions = vec![
+
+    (-1, 0),  // Up
+    (1, 0),   // Down
+    (0, -1),  // Left
+    (0, 1),   // Right
+    (-1, -1), // Top-left diagonal
+    (-1, 1),  // Top-right diagonal
+    (1, -1),  // Bottom-left diagonal
+    (1, 1),   // Bottom-right diagonal
+];
+
+     These represent all 8 possible directions a queen can move on a chessboard.
+     
+  2. Track Obstacles for Fast Lookup:
+
+let mut obstacles_set = std::collections::HashSet::new();
+
+for obs in obstacles {
+    let (r_o, c_o) = (obs[0], obs[1]);
+    obstacles_set.insert((r_o, c_o));
+}
+
+     Obstacles are stored in a HashSet for O(1) lookup time.
+
+  3. Iterate Through Each Direction:
+
+for (dr, dc) in directions {
+
+    let mut r = r_q;
+    let mut c = c_q;
+
+    loop {
+        r += dr;
+        c += dc;
+
+        // Check bounds and obstacles
+        if r < 1 || r > n || c < 1 || c > n || obstacles_set.contains(&(r, c)) {
+            break;
+        }
+
+        count += 1;
+    }
+}
+
+     - Start from the queen's position.
+     
+     - Move step-by-step in the current direction (dr, dc).
+     
+     - Stop when:
+     
+       - The queen moves out of bounds.
+       - The queen encounters an obstacle.
+
+  4. Return the Total Count: The final count represents the number of squares the queen can attack.
+
+The main Function
+
+Input Handling
+1. Parse board size (n) and number of obstacles (k).
+2. Parse the queen's position (r_q, c_q).
+3. Parse the obstacles into a Vec<Vec<i32>>.
+
+Function Call
+
+Pass the parsed inputs to the queensAttack function:
+
+let result = queensAttack(n, k, r_q, c_q, &obstacles);
+
+Output
+
+Write the result to the file specified by the OUTPUT_PATH environment variable:
+
+writeln!(&mut fptr, "{}", result).ok();
+
+Example Input and Output
+
+Input:
+
+5 3
+
+4 3
+
+5 5
+
+4 2
+
+2 3
+
+1. n = 5: The board is 5 x 5.
+2. k = 3: There are 3 obstacles.
+3. r_q = 4, c_q = 3: The queen is at row 4, column 3.
+4. Obstacles:
+   - (5, 5)
+   - (4, 2)
+   - (2, 3)
+   - 
+Execution Steps:
+1. Queen's Position:
+   - The queen starts at (4, 3).
+2. Iterate Over Directions:
+   - Up ((-1, 0)):
+     - Moves: (3, 3), (2, 3). Stops at (2, 3) (obstacle).
+     - Count: 2.
+   - Down ((1, 0)):
+     - Moves: (5, 3). Stops at (6, 3) (out of bounds).
+     - Count: 1.
+   - Left ((0, -1)):
+     - Moves: (4, 2). Stops at (4, 2) (obstacle).
+     - Count: 0.
+   - Right ((0, 1)):
+     - Moves: (4, 4), (4, 5). Stops at (4, 6) (out of bounds).
+     - Count: 2.
+   - Top-Left Diagonal ((-1, -1)):
+     - Moves: (3, 2), (2, 1). Stops at (1, 0) (out of bounds).
+     - Count: 2.
+   - Top-Right Diagonal ((-1, 1)):
+     - Moves: (3, 4), (2, 5). Stops at (1, 6) (out of bounds).
+     - Count: 2.
+   - Bottom-Left Diagonal ((1, -1)):
+     - Moves: (5, 2). Stops at (6, 1) (out of bounds).
+     - Count: 1.
+   - Bottom-Right Diagonal ((1, 1)):
+     - Moves: (5, 4). Stops at (6, 5) (out of bounds).
+     - Count: 1.
+3. Total Count:
+   
+2+1+0+2+2+2+1+1=11.
+
+Output:
+
+11
+
+Edge Cases
+1. No Obstacles:
+   - Input: n = 4, k = 0, r_q = 2, c_q = 2.
+   - The queen can move freely in all directions until the board boundary.
+2. Obstacles on All Sides:
+   - Input: n = 4, k = 4, r_q = 2, c_q = 2, obstacles at (2, 1), (2, 3), (1, 2), (3, 2).
+   - The queen cannot move in any direction.
+3. Maximum Board Size:
+   - Input: n = 100000, k = 100000.
+   - Ensure efficient performance even for large inputs.
+
+# KnightL on a chessboard
+Explanation of the knightlOnAChessboard Code
+
+This program calculates the minimum number of moves required for a knight to travel from the top-left corner to the bottom-right corner of an n x n chessboard for every possible pair of knight movements (a, b).
+
+Key Components of the Code
+
+knightlOnAChessboard Function
+1. Input:
+   - n: Size of the chessboard.
+2. Output:
+   - A 2D array where the value at position (i, j) represents the minimum number of moves for a knight with movement (i+1, j+1) to traverse the board.
+3. Logic:
+   - Iterate over all possible knight moves (a, b):
+
+for a in 1..n {
+
+    for b in 1..n {
+        results[a - 1][b - 1] = bfs_knight_moves(n, a, b);
+    }
+}
+
+     - Compute the minimum moves using a Breadth-First Search (BFS) strategy.
+     
+bfs_knight_moves Function
+Input:
+1. n: Size of the chessboard.
+   - a, b: The knight's movement pattern.
+2. Output:
+   - Minimum number of moves required to traverse the board, or -1 if unreachable.
+3. Logic:
+   - Define all possible moves of the knight based on (a, b):
+
+let directions = [
+
+    (a as isize, b as isize), (a as isize, -(b as isize)),
+    (-(a as isize), b as isize), (-(a as isize), -(b as isize)),
+    (b as isize, a as isize), (b as isize, -(a as isize)),
+    (-(b as isize), a as isize), (-(b as isize), -(a as isize)),
+];
+
+     - Initialize a BFS queue with the starting position (0, 0, 0) (row, column, moves).
+     
+     - Mark positions as visited to prevent revisiting:
+
+let mut visited = vec![vec![false; n]; n];
+
+visited[0][0] = true;
+
+     - For each position, enqueue all valid moves:
+
+for &(dx, dy) in &directions {
+
+    let nx = x + dx;
+    let ny = y + dy;
+
+    if nx >= 0 && ny >= 0 && nx < n as isize && ny < n as isize && !visited[nx as usize][ny as usize] {
+        visited[nx as usize][ny as usize] = true;
+        queue.push_back((nx, ny, moves + 1));
+    }
+}
+
+     - If the destination (n-1, n-1) is reached, return the number of moves.
+
+Returning Results
+
+The 2D array of results is written to the file specified by the OUTPUT_PATH environment variable:
+
+for i in 0..result.len() {
+
+    for j in 0..result[i].len() {
+        write!(&mut fptr, "{}", result[i][j]).ok();
+        if j != result[i].len() - 1 {
+            write!(&mut fptr, " ").ok();
+        }
+    }
+    if i != result.len() - 1 {
+        writeln!(&mut fptr).ok();
+    }
+}
+
+Example Input and Output
+
+Input:
+
+5
+1. n = 5: The chessboard is 5 x 5.
+Output:
+
+4 4 2 8
+
+4 2 4 4
+
+2 4 2 4
+
+8 4 4 2
+
+Execution Steps:
+1. For every (a, b) where 1 ≤ a, b < n:
+   - Perform BFS to compute the minimum moves.
+2. For Example:
+   - (a, b) = (1, 1):
+     - Possible moves: (1, 1), (1, -1), (-1, 1), ....
+     - Result: 4.
+   - (a, b) = (2, 1):
+     - Possible moves: (2, 1), (2, -1), ....
+     - Result: 2.
+3. Store results in the 2D array.
+
+Edge Cases
+1. Small Chessboard:
+   - Input: n = 2.
+   - The destination is unreachable for all (a, b). Output: -1.
+2. Large Chessboard:
+   - Input: n = 100.
+   - Ensure the BFS efficiently handles large boards.
+3. Symmetry:
+   - The result is symmetric because (a, b) and (b, a) yield the same moves.
+
+# The time in words
+Explanation of the timeInWords Code
+
+This program converts a given time (h hours, m minutes) into its equivalent English representation.
+
+Key Components of the Code
+
+timeInWords Function
+1. Input:
+   - h: Hour of the time (1–12).
+   - m: Minutes of the time (0–59).
+2. Output:
+   - A string representing the time in words.
+3. Logic:
+   - An array, numbers, contains word equivalents for numbers up to 30, including special terms like "quarter" and "half":
+
+let numbers = [
+
+    "", "one", "two", "three", ..., "twenty nine", "half",
+];
+
+   - Use match on the value of m (minutes) to determine the output format:
+     - Exact hour (m == 0):
+      
+0 => format!("{} o' clock", numbers[h as usize]),
+
+       Example: h = 5, m = 0 → "five o' clock".
+       
+     - One minute past the hour (m == 1):
+
+1 => format!("one minute past {}", numbers[h as usize]),
+
+       Example: h = 3, m = 1 → "one minute past three".
+       
+     - Quarter past (m == 15):
+
+15 => format!("quarter past {}", numbers[h as usize]),
+
+       Example: h = 6, m = 15 → "quarter past six".
+       
+     - Half past (m == 30):
+
+30 => format!("half past {}", numbers[h as usize]),
+
+       Example: h = 2, m = 30 → "half past two".
+       
+     - Quarter to the next hour (m == 45):
+
+45 => format!("quarter to {}", numbers[(h % 12 + 1) as usize]),
+
+       Example: h = 4, m = 45 → "quarter to five".
+
+     - General cases (2 <= m <= 30):
+
+2..=30 => format!("{} minutes past {}", numbers[m as usize], numbers[h as usize]),
+
+       Example: h = 8, m = 20 → "twenty minutes past eight".
+
+     - Minutes to the next hour (31 <= m <= 59):
+
+31..=59 => format!("{} minutes to {}", numbers[(60 - m) as usize], numbers[(h % 12 + 1) as usize]),
+
+       Example: h = 11, m = 40 → "twenty minutes to twelve".
+       
+main Function
+1. Input Handling:
+   - Read the hour (h) and minute (m) values from standard input:
+
+let h = stdin_iterator.next().unwrap().unwrap().trim().parse::<i32>().unwrap();
+
+let m = stdin_iterator.next().unwrap().unwrap().trim().parse::<i32>().unwrap();
+
+2. Function Call:
+   - Pass h and m to timeInWords to get the time in words.
+3. Output:
+   - Write the result to the file specified by OUTPUT_PATH:
+
+writeln!(&mut fptr, "{}", result).ok();
+
+Example Input and Output
+
+Input:
+
+5
+
+28
+
+Execution:
+1. timeInWords(5, 28):
+   - Match case: 2..=30 (m = 28).
+   - Result: "twenty eight minutes past five".
+
+Output:
+
+twenty eight minutes past five
+
+Edge Cases
+1. Exact Hour:
+
+Input: 3 0
+Output: "three o' clock"
+2. Just Before the Hour:
+   - Input: 7 59
+   - Output: "one minute to eight"
+3. Quarter Past:
+   - Input: 10 15
+   - Output: "quarter past ten"
+3. Quarter To:
+   - Input: 6 45
+   - Output: "quarter to seven"
+4. Half Past:
+   - Input: 12 30
+   - Output: "half past twelve"
+
+# Extra long factorials
