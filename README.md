@@ -1895,3 +1895,118 @@ Output: "three o' clock"
    - Output: "half past twelve"
 
 # Extra long factorials
+This Rust program calculates the factorial of a given integer n where 1 ≤ n ≤ 100 using a vector to store individual digits of the result.
+
+1. Function: extraLongFactorials
+The function calculates the factorial of n and prints it.
+
+Step 1: Initialize the Result
+
+let mut result = vec![1];
+- The result vector stores the digits of the factorial in reverse order.
+- Initially, result is set to [1] because 1! = 1. This will be the starting point for multiplication.
+
+Step 2: Loop Through 2 to n
+
+for i in 2..=n {
+- We iterate over all numbers 2 through n and multiply the current result (which represents the partial factorial) by the current number i.
+
+Step 3: Multiply Each Digit by i
+
+let mut carry = 0;
+
+for digit in result.iter_mut() {
+
+    let product = *digit * i + carry;
+    
+    *digit = product % 10; // Update the current digit
+    
+    carry = product / 10;  // Carry over to the next position
+    
+}
+- carry is used to handle overflow when multiplying each digit. It stores the remainder from previous operations.
+- Each digit in the result vector is multiplied by i:
+  - product = *digit * i + carry: Multiply the digit by i and add the carry.
+  - *digit = product % 10: Update the digit with the last digit of the product.
+  - carry = product / 10: Set the carry for the next position.
+
+Example for result = [2] and i = 5:
+   1. Multiply 2 * 5 = 10.
+   2. Update *digit = 10 % 10 = 0.
+   3. Set carry = 10 / 10 = 1.
+
+Step 4: Handle Remaining Carry
+
+while carry > 0 {
+
+    result.push(carry % 10);
+    carry /= 10;
+}
+- After processing all digits, if there's still a carry, it means we need to add more digits to the result.
+- carry % 10 is the next digit, and carry /= 10 removes that digit for the next loop.
+
+Example: If carry = 12, the loop adds 2 and 1 to the vector.
+
+Step 5: Print the Result
+
+for digit in result.iter().rev() {
+
+    print!("{}", digit);
+}
+
+println!();
+- The digits in the result vector are stored in reverse order (least significant digit first).
+- We use .iter().rev() to reverse the vector and print the most significant digits first.
+
+2. main Function
+The main function handles input and calls extraLongFactorials.
+
+let stdin = io::stdin();
+
+let mut stdin_iterator = stdin.lock().lines();
+
+let n = stdin_iterator.next().unwrap().unwrap().trim().parse::<i32>().unwrap();
+
+extraLongFactorials(n);
+
+Key Steps:
+   1. Read Input: Use stdin to read a single line.
+   2. Parse Input: Convert the input string to an integer n.
+   3. Call Function: Call extraLongFactorials(n) to compute and print the factorial.
+
+3. Example Execution (n = 25)
+   1. Initialize result = [1].
+   2. Multiply by each number from 2 to 25:
+      - For 2: result = [2]
+      - For 3: result = [6]
+      - For 4: result = [4, 2] (carry handled)
+      - Continue this process for all numbers up to 25.
+   3. At the end, the vector will contain the digits of 25! in reverse order:
+      result = [0, 0, 8, 9, 2, 5, 1, 4, 0, 0, 0, 0, 2, 1, 7, 4, 7, 8, 2, 8, 0, 0, 0, 0]
+   4. Print the reversed result as:
+      15511210043330985984000000
+      
+4. Key Concepts
+   1. Vector Representation of Numbers
+      - Since factorials can be huge (e.g., 100! has 158 digits), storing each digit as an element in a vector allows handling large numbers.
+   2. Digit-by-Digit Multiplication
+      - Multiplication is performed manually, digit by digit, similar to how it's done on paper.
+   3. Carry Management
+      - Carry is propagated across digits during multiplication to ensure the correct result.
+   4. Reverse Output
+      - Digits are stored in reverse order and printed in the correct order using .rev().
+
+5. Constraints
+   - The program works efficiently for 1 ≤ n ≤ 100 because:
+     - It uses a vector to handle arbitrarily large numbers.
+     - Each multiplication is done digit-by-digit, which is computationally manageable.
+       
+Output Example
+
+For input 25, the program outputs:
+
+15511210043330985984000000
+
+For input 30, it outputs:
+
+265252859812191058636308480000000
